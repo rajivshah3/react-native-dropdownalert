@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
+  SafeAreaView,
   View,
   Text,
   TouchableHighlight,
@@ -30,6 +31,7 @@ export default class DropdownAlert extends Component {
     startDelta: PropTypes.number,
     endDelta: PropTypes.number,
     containerStyle: ViewPropTypes.style,
+    safeAreaStyle:ViewPropTypes.style,
     titleStyle: Text.propTypes.style,
     messageStyle: Text.propTypes.style,
     imageStyle: Image.propTypes.style,
@@ -75,6 +77,10 @@ export default class DropdownAlert extends Component {
     containerStyle: {
       padding: 16,
       flexDirection: 'row',
+    },
+    safeAreaStyle:{
+      flexDirection:'row',
+      flex:1
     },
     titleStyle: {
       fontSize: 16,
@@ -423,16 +429,18 @@ export default class DropdownAlert extends Component {
         >
           <TouchableOpacity
             activeOpacity={!this.props.tapToCloseEnabled || showCancel ? 1 : 0.95}
-            onPress={showCancel ? null : () => this.close('tap')}
+            onPress={!this.props.tapToCloseEnabled ? null : () => this.close('tap')}
             disabled={!this.props.tapToCloseEnabled}
             onLayout={event => this.onLayoutEvent(event)}
           >
             <View style={style}>
-              <ImageView style={StyleSheet.flatten(this.props.imageStyle)} source={source} />
-              <View style={StyleSheet.flatten(this.props.defaultTextContainer)}>
-                <Label style={StyleSheet.flatten(this.props.titleStyle)} numberOfLines={this.props.titleNumOfLines} text={this.state.title} />
-                <Label style={StyleSheet.flatten(this.props.messageStyle)} numberOfLines={this.props.messageNumOfLines} text={this.state.message} />
-              </View>
+              <SafeAreaView style={StyleSheet.flatten(this.props.safeAreaStyle)}>
+                <ImageView style={StyleSheet.flatten(this.props.imageStyle)} source={source} />
+                <View style={StyleSheet.flatten(this.props.defaultTextContainer)}>
+                  <Label style={StyleSheet.flatten(this.props.titleStyle)} numberOfLines={this.props.titleNumOfLines} text={this.state.title} />
+                  <Label style={StyleSheet.flatten(this.props.messageStyle)} numberOfLines={this.props.messageNumOfLines} text={this.state.message} />
+                </View>
+              </SafeAreaView>
               {showCancel &&
                 <TouchableOpacity
                   style={{
