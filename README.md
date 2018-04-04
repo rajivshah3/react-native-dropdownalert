@@ -4,6 +4,7 @@
 [![npm version](http://img.shields.io/npm/v/react-native-dropdownalert.svg)](https://www.npmjs.com/package/react-native-dropdownalert)
 [![npm version](http://img.shields.io/npm/dm/react-native-dropdownalert.svg)](https://www.npmjs.com/package/react-native-dropdownalert)
 [![Build Status](https://travis-ci.org/testshallpass/react-native-dropdownalert.svg?branch=master)](https://travis-ci.org/testshallpass/react-native-dropdownalert)
+[![codecov](https://codecov.io/gh/testshallpass/react-native-dropdownalert/branch/master/graph/badge.svg)](https://codecov.io/gh/testshallpass/react-native-dropdownalert)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.github.com/testshallpass/react-native-dropdownalert/master/LICENSE)
 
 ![screenshot](https://raw.github.com/testshallpass/react-native-dropdownalert/master/screenshots/info.png) ![screenshot](https://raw.github.com/testshallpass/react-native-dropdownalert/master/screenshots/warning.png) ![screenshot](https://raw.github.com/testshallpass/react-native-dropdownalert/master/screenshots/error.png) ![screenshot](https://raw.github.com/testshallpass/react-native-dropdownalert/master/screenshots/success.png)
@@ -15,10 +16,10 @@
 4. [Usage](#usage)
 5. [Props](#props)
 
-A simple alert to notify users about new chat messages, something went wrong or everything is ok. It can be closed by tap, cancel button, automatically with `closeInterval`, pan responder up gesture or programmatically. 
+A simple alert to notify users about new chat messages, something went wrong or everything is ok. It can be closed by tap, cancel button, automatically with `closeInterval`, pan responder up gesture or programmatically.
 
 ### Support
-| react-native version | package version | reason | 
+| react-native version | package version | reason |
 | ---- | :---: | ---- |
 | 0.50.0 | >=3.2.0 | Added SafeAreaView (iPhone X) |
 | 0.44.0 | >=2.12.0 | Added ViewPropTypes |
@@ -62,7 +63,11 @@ export default class Example extends Component {
 | Name | Type | Description | Default |
 | ---- | :---: | --- | --- |
 | ```closeInterval``` | Number  | dismiss alert at a certain time in milliseconds | 4000
-| ```imageSrc``` | String or Number  | local or network source | null
+| ```imageSrc``` | String or Number  | local or network source for custom alert type | null
+| ```infoImageSrc``` | String or Number  | local or network source for info alert type | ```require('./assets/info.png')```
+| ```warnImageSrc``` | String or Number  | local or network source for warn alert type | ```require('./assets/warn.png')```
+| ```errorImageSrc``` | String or Number  | local or network source for error alert type | ```require('./assets/error.png')```
+| ```successImageSrc``` | String or Number  | local or network source for success alert type | ```require('./assets/success.png')```
 | ```startDelta``` | Number  | where the container starts (changes based on container height onLayout) | -100
 | ```endDelta``` | Number  | where the container ends | 0
 | ```onClose``` | Function  | Invoked when alert is closed Returns: ```data = {type, title, message, action}```  | null
@@ -75,6 +80,7 @@ export default class Example extends Component {
 | ```panResponderEnabled``` | Bool  | enable/disable close with pan responder | true
 | ```replaceEnabled``` | Bool  | enables the alert to either state change without dismissal or go to next alert with dismissal | true
 | ```translucent``` | Bool  | StatusBar prop  | false
+| ```useNativeDriver``` | Bool  | enable/disable native driver for animations. For android platform, in some older React Native versions, enable useNativeDriver can cause some problems. See [#65](https://github.com/testshallpass/react-native-dropdownalert/issues/65)  | true (iOS) / false (Android)
 | ```updateStatusBar``` | Bool  | whether or not to update status bar styles  | true
 | ```activeStatusBarStyle``` | String  | StatusBar barStyle when alert is open | `light-content`
 | ```activeStatusBarBackgroundColor``` | String | StatusBar backgroundColor when alert is open | It takes on the backgroundColor of alert if predefined else default or provided prop
@@ -94,5 +100,9 @@ export default class Example extends Component {
 | ```sensitivity``` | Number  | Sensitivity for the pan responder up gesture | 20
 | ```defaultContainer``` | ViewPropTypes.style  | Style for inner view container (**override paddingTop with this**) | ```{ padding: 8, paddingTop: IS_ANDROID ? 0 : 20, flexDirection: 'row' } ```
 | ```defaultTextContainer``` | ViewPropTypes.style  | Style for inner text container (holds title and message) | ```{ flex: 1, padding: 8 }```
+| ```renderImage``` | Function  | Use to overide the left image component  | undefined
+| ```renderCancel``` | Function  | Use to overide the cancel button component  | undefined
+| ```renderTitle``` | Function  | Use to overide the title component  | undefined
+| ```renderMessage``` | Function  | Use to overide the message component  | undefined
 
 > Inspired by: [RKDropdownAlert](https://github.com/cwRichardKim/RKDropdownAlert)

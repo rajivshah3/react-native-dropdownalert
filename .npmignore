@@ -11,3 +11,6 @@ ISSUE_TEMPLATE.md
 babelrc
 test/
 __tests__/
+coverage/
+.gitattributes
+setupTests.js

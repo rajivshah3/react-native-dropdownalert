@@ -22,6 +22,10 @@ import ImageView from './imageview';
 export default class DropdownAlert extends Component {
   static propTypes = {
     imageSrc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    infoImageSrc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    warnImageSrc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    errorImageSrc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    successImageSrc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     cancelBtnImageSrc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     infoColor: PropTypes.string,
     warnColor: PropTypes.string,
@@ -45,6 +49,7 @@ export default class DropdownAlert extends Component {
     panResponderEnabled: PropTypes.bool,
     replaceEnabled: PropTypes.bool,
     translucent: PropTypes.bool,
+    useNativeDriver: PropTypes.bool,
     activeStatusBarStyle: PropTypes.string,
     activeStatusBarBackgroundColor: PropTypes.string,
     inactiveStatusBarStyle: PropTypes.string,
@@ -55,6 +60,10 @@ export default class DropdownAlert extends Component {
     sensitivity: PropTypes.number,
     defaultContainer: ViewPropTypes.style,
     defaultTextContainer: ViewPropTypes.style,
+    renderImage: PropTypes.func,
+    renderCancel: PropTypes.func,
+    renderTitle: PropTypes.func,
+    renderMessage: PropTypes.func,
   };
   static defaultProps = {
     onClose: null,
@@ -65,6 +74,10 @@ export default class DropdownAlert extends Component {
     titleNumOfLines: 1,
     messageNumOfLines: 3,
     imageSrc: null,
+    infoImageSrc: require('./assets/info.png'),
+    warnImageSrc: require('./assets/warn.png'),
+    errorImageSrc: require('./assets/error.png'),
+    successImageSrc: require('./assets/success.png'),
     cancelBtnImageSrc: require('./assets/cancel.png'),
     infoColor: '#2B73B6',
     warnColor: '#cd853f',
@@ -123,9 +136,14 @@ export default class DropdownAlert extends Component {
     inactiveStatusBarStyle: StatusBarDefaultBarStyle,
     inactiveStatusBarBackgroundColor: StatusBarDefaultBackgroundColor,
     updateStatusBar: true,
+    useNativeDriver: IS_IOS,
     elevation: 1,
     zIndex: null,
     sensitivity: 20,
+    renderImage: undefined,
+    renderCancel: undefined,
+    renderTitle: undefined,
+    renderMessage: undefined,
   };
   constructor(props) {
     super(props);
@@ -307,7 +325,7 @@ export default class DropdownAlert extends Component {
       toValue: toValue,
       duration: this.state.duration,
       friction: 9,
-      useNativeDriver: IS_IOS,
+      useNativeDriver: this.props.useNativeDriver,
     }).start();
   };
   onLayoutEvent(event) {
@@ -357,13 +375,13 @@ export default class DropdownAlert extends Component {
   getSourceForType(type) {
     switch (type) {
       case 'info':
-        return require('./assets/info.png');
+        return this.props.infoImageSrc;
       case 'warn':
-        return require('./assets/warn.png');
+        return this.props.warnImageSrc;
       case 'error':
-        return require('./assets/error.png');
+        return this.props.errorImageSrc;
       case 'success':
-        return require('./assets/success.png');
+        return this.props.successImageSrc;
       default:
         return this.props.imageSrc;
     }
@@ -380,6 +398,51 @@ export default class DropdownAlert extends Component {
         return this.props.successColor;
       default:
         return this.props.containerStyle.backgroundColor;
+    }
+  }
+  renderImage(source) {
+    if (this.props.renderImage) {
+      return this.props.renderImage(this.props);
+    }
+    return <ImageView style={StyleSheet.flatten(this.props.imageStyle)} source={source} />;
+  }
+  renderCancel(show) {
+    if (show) {
+      if (this.props.renderCancel) {
+        return this.props.renderCancel(this.props);
+      } else {
+        return (
+          <TouchableOpacity
+            style={{
+              alignSelf: this.props.cancelBtnImageStyle.alignSelf,
+              width: this.props.cancelBtnImageStyle.width,
+              height: this.props.cancelBtnImageStyle.height,
+            }}
+            onPress={() => this.close('cancel')}
+          >
+            <ImageView style={this.props.cancelBtnImageStyle} source={this.props.cancelBtnImageSrc} />
+          </TouchableOpacity>
+        );
+      }
+    }
+    return null;
+  }
+  renderTitle() {
+    if (this.props.renderTitle) {
+      return this.props.renderTitle(this.props);
+    } else {
+      return (
+        <Label style={StyleSheet.flatten(this.props.titleStyle)} numberOfLines={this.props.titleNumOfLines} text={this.state.title} />
+      );
+    }
+  }
+  renderMessage() {
+    if (this.props.renderMessage) {
+      return this.props.renderMessage(this.props);
+    } else {
+      return (
+        <Label style={StyleSheet.flatten(this.props.messageStyle)} numberOfLines={this.props.messageNumOfLines} text={this.state.message} />
+      );
     }
   }
   render() {
@@ -435,23 +498,13 @@ export default class DropdownAlert extends Component {
           >
             <View style={style}>
               <SafeAreaView style={StyleSheet.flatten(this.props.safeAreaStyle)}>
-                <ImageView style={StyleSheet.flatten(this.props.imageStyle)} source={source} />
+                {this.renderImage(source)}
                 <View style={StyleSheet.flatten(this.props.defaultTextContainer)}>
-                  <Label style={StyleSheet.flatten(this.props.titleStyle)} numberOfLines={this.props.titleNumOfLines} text={this.state.title} />
-                  <Label style={StyleSheet.flatten(this.props.messageStyle)} numberOfLines={this.props.messageNumOfLines} text={this.state.message} />
+                  {this.renderTitle()}
+                  {this.renderMessage()}
                 </View>
               </SafeAreaView>
-              {showCancel &&
-                <TouchableOpacity
-                  style={{
-                    alignSelf: this.props.cancelBtnImageStyle.alignSelf,
-                    width: this.props.cancelBtnImageStyle.width,
-                    height: this.props.cancelBtnImageStyle.height,
-                  }}
-                  onPress={() => this.close('cancel')}
-                >
-                  <ImageView style={this.props.cancelBtnImageStyle} source={this.props.cancelBtnImageSrc} />
-                </TouchableOpacity>}
+              {this.renderCancel(showCancel)}
             </View>
           </TouchableOpacity>
         </Animated.View>
